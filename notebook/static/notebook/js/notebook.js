@@ -1318,7 +1318,8 @@ define([
                 cell = new textcell.RawCell(cell_options);
                 break;
             case 'WYSIWYG':
-                cell = new WYSIWYGCell(cell_options);
+                cell = new WYSIWYGCell.WYSIWYGCell(cell_options);
+                break;
             default:
                 console.log("Unrecognized cell type: ", type, cellmod);
                 cell = new cellmod.UnrecognizedCell(cell_options);
