@@ -15,6 +15,7 @@ define([
     './cell',
     './textcell',
     './codecell',
+    './WYSIWYGCell',
     'moment',
     'services/config',
     'services/sessions/session',
@@ -43,6 +44,7 @@ define([
     cellmod,
     textcell,
     codecell,
+    WYSIWYGCell,
     moment,
     configmod,
     session,
@@ -1314,6 +1316,9 @@ define([
                 break;
             case 'raw':
                 cell = new textcell.RawCell(cell_options);
+                break;
+            case 'WYSIWYG':
+                cell = new WYSIWYGCell.WYSIWYGCell(cell_options);
                 break;
             default:
                 console.log("Unrecognized cell type: ", type, cellmod);
