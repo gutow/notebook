@@ -125,6 +125,7 @@ define([
         cell.append(inner_cell);
         this.element = cell;
         this.inner_cell = inner_cell;
+        that.events.trigger('edit_mode.Cell', {cell: that});
     };
 
 
