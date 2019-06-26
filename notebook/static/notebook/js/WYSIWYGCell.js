@@ -200,6 +200,26 @@ define([
     };
 
 
+    WYSIWYGCell.prototype.select = function (moveacnhor) {
+    	 // if anchor is true, set the move the anchor
+        moveanchor = (moveanchor === undefined)? true:moveanchor;
+        if(moveanchor){
+            this.anchor=true;
+        }
+
+        if (!this.selected) {
+            this.element.addClass('selected');
+            this.element.removeClass('unselected');
+            this.selected = true;
+            // disable 'insert image' menu item (specific cell types will enable
+            // it in their override select())
+            this.notebook.set_insert_image_enabled(false);
+            that.events.trigger('edit_mode.Cell', {cell: that});
+            return true;
+        } else {
+            return false;
+        }
+    }
     /**
      * Create Text cell from JSON
      * @param {json} data - JSON serialized text-cell
