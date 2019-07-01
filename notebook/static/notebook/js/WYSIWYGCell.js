@@ -11,9 +11,6 @@ define([
     'notebook/js/mathjaxutils',
     'notebook/js/celltoolbar',
     'components/marked/lib/marked',
-    'codemirror/lib/codemirror',
-    'codemirror/mode/gfm/gfm',
-    'notebook/js/codemirror-ipythongfm',
 //    'components/quill/quill.min' This should be required, but does not play well
 //                                  with requirejs, so loaded in head of page.
 ], function(
@@ -26,15 +23,15 @@ define([
     mathjaxutils,
     celltoolbar,
     marked,
-    CodeMirror,
-    gfm,
-    ipgfm,
     ) {
     "use strict";
     function encodeURIandParens(uri){return encodeURI(uri).replace('(','%28').replace(')','%29')}
 
     var Cell = cell.Cell;
 
+    //at bottom will be replacement functions for notebook calls to codemirror that should not exist, 
+    //there should be generic editor calls if you insist on linking them together but do not use a specific editor as the core of the notebook
+    
     var WYSIWYGCell = function (options) {
         /**
          * Constructor
@@ -69,6 +66,7 @@ define([
         this.cell_type = this.cell_type || 'WYSIWYG';
         mathjaxutils = mathjaxutils;
         this.rendered = false;
+       
     };
 
     WYSIWYGCell.prototype = Object.create(Cell.prototype);
@@ -80,7 +78,32 @@ define([
         }
     };
 
-
+   /**
+     * Subclasses can implement override bind_events.
+     * Be careful to call the parent method when overwriting as it fires event.
+     * this will be triggered after create_element in constructor.
+     * @method bind_events
+     */
+    WYSIWYGCell.prototype.bind_events = function () {
+    	Cell.prototype.bind_events.apply(this);
+    	var that = this;
+        // We trigger events so that Cell doesn't have to depend on Notebook.
+        that.element.click(function (event) {
+            that._on_click(event);
+        });
+        if (this.editor) {
+            this.onfocus = function () {
+            	that.events.trigger('select.Cell', {'cell':that});
+                that.events.trigger('edit_mode.Cell', {cell: that});
+            }
+            };
+        if (this.editor) {
+            this.onblur = function() {
+                that.events.trigger('command_mode.Cell', {cell: that});
+            };
+        };
+    };
+    
     /**
      * Create the DOM element of the WYSIWYGCell
      * @method create_element
@@ -89,6 +112,21 @@ define([
     WYSIWYGCell.prototype.create_element = function () {
         Cell.prototype.create_element.apply(this, arguments);
         var that = this;
+
+        // Dummy code_mirror functions to suck up notebook calls to codemirror
+//        this.code_mirror = function() {
+//        	var getInputField = function() {
+//        		var blur = function() {
+//        			that.handle_command_mode(data.cell);
+//        		};
+//        	};
+//        	var refresh = function() {
+//        	null;
+//        	};
+//        	var on = function() {
+//        	null;	
+//        	};
+//        };
 
         var cell = $("<div>").addClass('cell WYSIWYG');
         cell.attr('tabindex','2');
@@ -106,6 +144,7 @@ define([
         var input_area = document.createElement('div');
         input_area.classList.add('input_area');
         input_area.classList.add('WYSIWYG');
+        this.code_mirror = new CodeMirror(input_area, this._options.cm_config);
         inner_cell.append(input_area);
         input_area.innerHTML=' \n'; //make sure the div has some content for quill
                                    // to start with.
@@ -138,7 +177,7 @@ define([
         this.attachments[key] = {};
         this.attachments[key][mime_type] = b64_data;
     };
-
+/* 
     WYSIWYGCell.prototype.select = function () {
          var cont = Cell.prototype.select.apply(this, arguments);
          if (cont) {
@@ -147,7 +186,7 @@ define([
             }
         } 
         return cont;
-    };
+    }; */
 
     WYSIWYGCell.prototype.unrender = function () {
         var cont = Cell.prototype.unrender.apply(this);
@@ -200,8 +239,9 @@ define([
     };
 
 
-    WYSIWYGCell.prototype.select = function (moveacnhor) {
-    	 // if anchor is true, set the move the anchor
+    WYSIWYGCell.prototype.select = function (moveanchor) {
+    	var that = this;
+    	// if anchor is true, set the move the anchor
         moveanchor = (moveanchor === undefined)? true:moveanchor;
         if(moveanchor){
             this.anchor=true;
@@ -214,7 +254,9 @@ define([
             // disable 'insert image' menu item (specific cell types will enable
             // it in their override select())
             this.notebook.set_insert_image_enabled(false);
+            if(this.mode != 'edit') {
             that.events.trigger('edit_mode.Cell', {cell: that});
+            }
             return true;
         } else {
             return false;
@@ -301,7 +343,27 @@ define([
         }
         return data;
     };
-
+    
+//codemirror monkeypatch overrides on calls from notebook
+//
+//
+//
+/*     WYSIWYGCell.prototype.code_mirror = function() {
+    	var getInputField = function() {
+    		var blur = function() {
+    			that.handle_command_mode(data.cell);
+    		};
+        };
+        var refresh = function() {
+        	//this.editor.update(String = 'api');
+        	null;
+        };
+    }; */
+//end monkeypatch overrides, if this is too long then its proof 
+//that you need less interlinking
+//
+//    
+    
     var WYSIWYGCell = {
         WYSIWYGCell: WYSIWYGCell,
     };
@@ -337,3 +399,4 @@ function to_WYSIWYG_cell() {
 //	target_cell.tinymce.UndoManager.clear();
 	source_cell.element.remove();
 }
+
