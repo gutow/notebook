@@ -113,21 +113,6 @@ define([
         Cell.prototype.create_element.apply(this, arguments);
         var that = this;
 
-        // Dummy code_mirror functions to suck up notebook calls to codemirror
-//        this.code_mirror = function() {
-//        	var getInputField = function() {
-//        		var blur = function() {
-//        			that.handle_command_mode(data.cell);
-//        		};
-//        	};
-//        	var refresh = function() {
-//        	null;
-//        	};
-//        	var on = function() {
-//        	null;	
-//        	};
-//        };
-
         var cell = $("<div>").addClass('cell WYSIWYG');
         cell.attr('tabindex','2');
 
@@ -144,16 +129,68 @@ define([
         var input_area = document.createElement('div');
         input_area.classList.add('input_area');
         input_area.classList.add('WYSIWYG');
-        this.code_mirror = new CodeMirror(input_area, this._options.cm_config);
+        
+        //this.code_mirror = new CodeMirror(input_area, this._options.cm_config);
         inner_cell.append(input_area);
         input_area.innerHTML=' \n'; //make sure the div has some content for quill
                                    // to start with.
+/*         this.code_mirror = new function() {
+	        var getInputField = function() {
+	        	var blur = function() {
+        			that.handle_command_mode(data.cell);
+        		};
+			};
+			var on = function(name, func) {
+				null;
+			};
+		}; */
         this.editor = new Quill(input_area, {
 /*                 modules:{
                     toolbar: toolbarOptions
                 },
  */                theme: 'snow'
             });
+        
+        //codemirror monkeypatch overrides on calls from notebook
+        //
+        //
+        //
+    		this.code_mirror = function() {
+    			null;	
+    		}
+    		this.code_mirror.getInputField = function() {
+    			return input_area;
+    		};
+    		this.code_mirror.getInputField.blur = function() {
+    			that.handle_command_mode(data.cell);
+    		};
+    		this.refresh = function() {
+    			//this.editor.update(String = 'api');
+    			null;
+    		};
+    		this.code_mirror.focus = function() {
+    			this.editor.focus();
+    		};
+    		this.code_mirror.on = function(param1, param2) {
+    			alert(param1, param2);
+    			if (param1 == 'focus' && param2 == null) {
+    				if (that.keyboard_manager) {
+    					that.keyboard_manager.enable();
+    					}
+    				that.code_mirror.setOption('readOnly', !that.is_editable());
+    				}
+    				
+    			}
+    			//quill.on('editor-change', )
+
+    			//that.events.trigger("change.Cell", {cell: that, change: change});
+                //that.events.trigger("set_dirty.Notebook", {value: true});
+            //}); 
+    	//end monkeypatch overrides, if this is too long then its proof 
+    	//that you need less interlinking
+    	//
+    	//
+    	
         // In case of bugs that put the keyboard manager into an inconsistent state,
         // ensure KM is enabled when quill is focused:
         //this.editor.on('keydown', $.proxy(this.handle_keyevent,this))  keydown is not an event emitted by quill...
@@ -344,25 +381,7 @@ define([
         return data;
     };
     
-//codemirror monkeypatch overrides on calls from notebook
-//
-//
-//
-/*     WYSIWYGCell.prototype.code_mirror = function() {
-    	var getInputField = function() {
-    		var blur = function() {
-    			that.handle_command_mode(data.cell);
-    		};
-        };
-        var refresh = function() {
-        	//this.editor.update(String = 'api');
-        	null;
-        };
-    }; */
-//end monkeypatch overrides, if this is too long then its proof 
-//that you need less interlinking
-//
-//    
+    
     
     var WYSIWYGCell = {
         WYSIWYGCell: WYSIWYGCell,
