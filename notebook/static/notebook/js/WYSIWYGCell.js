@@ -151,6 +151,12 @@ define([
  */                theme: 'snow'
             });
         
+        this.editor.on('focus', function () {
+        	if(that.keyboard_manager) {
+                that.keyboard_manager.enable();
+            }
+            that.code_mirror.setOption('readOnly', !that.is_editable());
+        });
         //codemirror monkeypatch overrides on calls from notebook
         //
         //
@@ -171,16 +177,24 @@ define([
     		this.code_mirror.focus = function() {
     			this.editor.focus();
     		};
-    		this.code_mirror.on = function(param1, param2) {
-    			alert(param1, param2);
-    			if (param1 == 'focus' && param2 == null) {
-    				if (that.keyboard_manager) {
-    					that.keyboard_manager.enable();
-    					}
-    				that.code_mirror.setOption('readOnly', !that.is_editable());
-    				}
-    				
-    			}
+     		this.code_mirror.on = function(cm, change) {
+     			alert(cm, change);
+    			that.editor.on('focus', function(cm, change) {
+    				if (!that.selected) {
+                    that.events.trigger('select.Cell', {'cell':that});
+                    }
+                that.events.trigger('edit_mode.Cell', {cell: that});
+    			});
+    			
+    			that.editor.on("change", function(cm, change) {
+    			that.events.trigger("change.Cell", {cell: that, change: change});
+                that.events.trigger("set_dirty.Notebook", {value: true});
+                });
+    			} 
+    			that.editor.on('blur', function(cm, change) {
+    			that.events.trigger('command_mode.Cell', {cell: that});
+    			});
+    			
     			//quill.on('editor-change', )
 
     			//that.events.trigger("change.Cell", {cell: that, change: change});
