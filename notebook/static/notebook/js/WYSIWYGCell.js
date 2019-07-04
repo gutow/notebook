@@ -151,11 +151,20 @@ define([
  */                theme: 'snow'
             });
         
-        this.editor.on('focus', function () {
+/*         this.editor.on('focus', function () {
         	if(that.keyboard_manager) {
                 that.keyboard_manager.enable();
             }
             that.code_mirror.setOption('readOnly', !that.is_editable());
+        }); */
+        this.editor.on('editor-change', function (eventName, ...args){
+                //alert('quill caught a click in the editor');
+    			if (!that.selected) and (eventName == 'selection-change') and
+    			(args[0].length >=0){//we're in the cell
+                    that.events.trigger('select.Cell', {'cell':that});
+                    }
+                that.events.trigger('edit_mode.Cell', {cell: that});
+                //if already selected or blurred do nothing.
         });
         //codemirror monkeypatch overrides on calls from notebook
         //
