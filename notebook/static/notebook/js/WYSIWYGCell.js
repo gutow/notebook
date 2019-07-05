@@ -134,29 +134,13 @@ define([
         inner_cell.append(input_area);
         input_area.innerHTML=' \n'; //make sure the div has some content for quill
                                    // to start with.
-/*         this.code_mirror = new function() {
-	        var getInputField = function() {
-	        	var blur = function() {
-        			that.handle_command_mode(data.cell);
-        		};
-			};
-			var on = function(name, func) {
-				null;
-			};
-		}; */
         this.editor = new Quill(input_area, {
 /*                 modules:{
                     toolbar: toolbarOptions
                 },
  */                theme: 'snow'
             });
-        
-/*         this.editor.on('focus', function () {
-        	if(that.keyboard_manager) {
-                that.keyboard_manager.enable();
-            }
-            that.code_mirror.setOption('readOnly', !that.is_editable());
-        }); */
+ 
         this.editor.on('editor-change', function (eventName, args){
                 //alert('quill caught a click in the editor');
     			if ((!that.selected) && (eventName == 'selection-change')){
@@ -169,7 +153,7 @@ define([
                     }
                 //otherwise already selected or blurred so do nothing.
         });
-        //codemirror monkeypatch overrides on calls from notebook
+         //codemirror monkeypatch overrides on calls from notebook
         //
         //
         //
@@ -182,30 +166,33 @@ define([
     		this.code_mirror.getInputField.blur = function() {
     			that.handle_command_mode(data.cell);
     		};
-    		this.refresh = function() {
+    		this.code_mirror.refresh = function() {
+    		null;	
+    		}
+    		//this.refresh = function() {
     			//this.editor.update(String = 'api');
-    			null;
-    		};
-    		this.code_mirror.focus = function() {
-    			this.editor.focus();
-    		};
-     		this.code_mirror.on = function(cm, change) {
-     			alert(cm, change);
-    			that.editor.on('focus', function(cm, change) {
+    			//null;
+    		//};
+    		//this.code_mirror.focus = function() {
+    			//this.editor.focus();
+    		//};
+     		 this.code_mirror.on = function(cm, change) {
+
+    			/* that.editor.on('focus', function(cm, change) {
     				if (!that.selected) {
                     that.events.trigger('select.Cell', {'cell':that});
                     }
                 that.events.trigger('edit_mode.Cell', {cell: that});
-    			});
+    			});*/
     			
-    			that.editor.on("change", function(cm, change) {
+    			/* that.editor.on("change", function(cm, change) {
     			that.events.trigger("change.Cell", {cell: that, change: change});
                 that.events.trigger("set_dirty.Notebook", {value: true});
-                });
+                }); */
     			} 
-    			that.editor.on('blur', function(cm, change) {
+    			/*that.editor.on('blur', function(cm, change) {
     			that.events.trigger('command_mode.Cell', {cell: that});
-    			});
+    			}); */
     			
     			//quill.on('editor-change', )
 
@@ -215,7 +202,7 @@ define([
     	//end monkeypatch overrides, if this is too long then its proof 
     	//that you need less interlinking
     	//
-    	//
+    	// 
     	
         // In case of bugs that put the keyboard manager into an inconsistent state,
         // ensure KM is enabled when quill is focused:
@@ -240,16 +227,6 @@ define([
         this.attachments[key] = {};
         this.attachments[key][mime_type] = b64_data;
     };
-/* 
-    WYSIWYGCell.prototype.select = function () {
-         var cont = Cell.prototype.select.apply(this, arguments);
-         if (cont) {
-            if (this.mode === 'edit') {
-                this.editor.focus();
-            }
-        } 
-        return cont;
-    }; */
 
     WYSIWYGCell.prototype.unrender = function () {
         var cont = Cell.prototype.unrender.apply(this);
@@ -283,7 +260,6 @@ define([
     WYSIWYGCell.prototype.set_text = function(text) {
         this.editor.setText(text);
         this.unrender();
-        //this.code_mirror.refresh();
     };
 
     /**
@@ -441,7 +417,6 @@ function to_WYSIWYG_cell() {
 	target_cell.metadata = source_cell.metadata;
 	target_cell.attachments = source_cell.attachments
 	target_cell.content = text;
-//	target_cell.tinymce.UndoManager.clear();
 	source_cell.element.remove();
 }
 
