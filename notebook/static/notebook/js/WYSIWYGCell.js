@@ -140,12 +140,16 @@ define([
             });
  
         this.editor.on('editor-change', function (eventName, args){
-    			if ((!that.selected) && (eventName == 'selection-change')){
+    			if (eventName == 'selection-change'){
     			    // and (eventName == 'selection-change') and (args[0].length >=0)
     			    //we're in the cell and (args[0].length >=0)
     			    if ((args!=null) && (Range.length >=0)) {
+    			    	if (!that.selected) {
     			        that.events.trigger('select.Cell', {'cell':that});
+    			        	}
+    			     if(notebook.mode != 'edit') {
     			        that.events.trigger('edit_mode.Cell', {cell: that});
+    			     		}
                         }
                     }
                 //otherwise already selected or blurred so do nothing.
