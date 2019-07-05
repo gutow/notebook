@@ -157,14 +157,17 @@ define([
             }
             that.code_mirror.setOption('readOnly', !that.is_editable());
         }); */
-        this.editor.on('editor-change', function (eventName, ...args){
+        this.editor.on('editor-change', function (eventName, args){
                 //alert('quill caught a click in the editor');
-    			if (!that.selected) and (eventName == 'selection-change') and
-    			(args[0].length >=0){//we're in the cell
-                    that.events.trigger('select.Cell', {'cell':that});
+    			if ((!that.selected) && (eventName == 'selection-change')){
+    			    // and (eventName == 'selection-change') and (args[0].length >=0)
+    			    //we're in the cell and (args[0].length >=0)
+    			    if ((args!=null) && (Range.length >=0)) {
+    			        that.events.trigger('select.Cell', {'cell':that});
+    			        that.events.trigger('edit_mode.Cell', {cell: that});
+                        }
                     }
-                that.events.trigger('edit_mode.Cell', {cell: that});
-                //if already selected or blurred do nothing.
+                //otherwise already selected or blurred so do nothing.
         });
         //codemirror monkeypatch overrides on calls from notebook
         //
