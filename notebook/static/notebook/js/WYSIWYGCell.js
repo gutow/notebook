@@ -129,8 +129,6 @@ define([
         var input_area = document.createElement('div');
         input_area.classList.add('input_area');
         input_area.classList.add('WYSIWYG');
-        
-        //this.code_mirror = new CodeMirror(input_area, this._options.cm_config);
         inner_cell.append(input_area);
         input_area.innerHTML=' \n'; //make sure the div has some content for quill
                                    // to start with.
@@ -142,7 +140,6 @@ define([
             });
  
         this.editor.on('editor-change', function (eventName, args){
-                //alert('quill caught a click in the editor');
     			if ((!that.selected) && (eventName == 'selection-change')){
     			    // and (eventName == 'selection-change') and (args[0].length >=0)
     			    //we're in the cell and (args[0].length >=0)
@@ -169,36 +166,9 @@ define([
     		this.code_mirror.refresh = function() {
     		null;	
     		}
-    		//this.refresh = function() {
-    			//this.editor.update(String = 'api');
-    			//null;
-    		//};
-    		//this.code_mirror.focus = function() {
-    			//this.editor.focus();
-    		//};
-     		 this.code_mirror.on = function(cm, change) {
+     		this.code_mirror.on = function(cm, change) {
 
-    			/* that.editor.on('focus', function(cm, change) {
-    				if (!that.selected) {
-                    that.events.trigger('select.Cell', {'cell':that});
-                    }
-                that.events.trigger('edit_mode.Cell', {cell: that});
-    			});*/
-    			
-    			/* that.editor.on("change", function(cm, change) {
-    			that.events.trigger("change.Cell", {cell: that, change: change});
-                that.events.trigger("set_dirty.Notebook", {value: true});
-                }); */
     			} 
-    			/*that.editor.on('blur', function(cm, change) {
-    			that.events.trigger('command_mode.Cell', {cell: that});
-    			}); */
-    			
-    			//quill.on('editor-change', )
-
-    			//that.events.trigger("change.Cell", {cell: that, change: change});
-                //that.events.trigger("set_dirty.Notebook", {value: true});
-            //}); 
     	//end monkeypatch overrides, if this is too long then its proof 
     	//that you need less interlinking
     	//
