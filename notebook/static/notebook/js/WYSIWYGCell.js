@@ -312,7 +312,7 @@ define([
         }
 
         var data = Cell.prototype.toJSON.apply(this);
-        data.source = this.get_text();
+        data.source = this.getContents();
         if (data.source == this.placeholder) {
             data.source = "";
         }
