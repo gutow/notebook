@@ -288,7 +288,7 @@ define([
             }
 
             if (data.source !== undefined) {
-                this.set_text(data.source);
+                this.editor.setContents(data.source);
                 // make this value the starting point, so that we can only undo
                 // to this state, instead of a blank cell
                 //this.tinymce.UndoManager.clear();
@@ -312,7 +312,7 @@ define([
         }
 
         var data = Cell.prototype.toJSON.apply(this);
-        data.source = this.getContents();
+        data.source = this.editor.getContents();
         if (data.source == this.placeholder) {
             data.source = "";
         }
