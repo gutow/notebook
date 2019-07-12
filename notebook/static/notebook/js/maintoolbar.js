@@ -118,6 +118,8 @@ define([
                 that.notebook.to_heading();
                 sel.val('markdown');
                 break;
+            case 'WYSIWYG':
+            	that.notebook.celss_to_WYSIWYG();
             case 'multiselect':
                 break;
             default:

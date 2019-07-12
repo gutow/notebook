@@ -1536,6 +1536,16 @@ define([
         }
      };
 
+     Notebook.prototype.cells_to_WYSIWYG = function (indices) {
+        if (indices === undefined) {
+            indices = this.get_selected_cells_indices();
+        }
+
+        for(var i=0; i < indices.length; i++) {
+            i.to_WYSIWYG_cell();
+        }
+     };     
+     
     /**
      * Turn a cell into a raw text cell.
      * 
