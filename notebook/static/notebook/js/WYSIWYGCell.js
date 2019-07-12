@@ -390,7 +390,7 @@ function to_WYSIWYG_cell() {
 	}
 	target_cell.metadata = source_cell.metadata;
 	target_cell.attachments = source_cell.attachments
-	target_cell.content = text;
+	target_cell.editor.setText(text);
 	source_cell.element.remove();
 }
 
