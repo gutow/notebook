@@ -15,7 +15,8 @@ from ...files.handlers import FilesHandler
 from .checkpoints import Checkpoints
 from traitlets.config.configurable import LoggingConfigurable
 from nbformat import sign, validate as validate_nb, ValidationError
-from nbformat.v4 import new_notebook
+#from nbformat.v4 import new_notebook
+from nbformat.v5 import new_notebook
 from ipython_genutils.importstring import import_item
 from traitlets import (
     Any,
@@ -347,6 +348,7 @@ class ContentsManager(LoggingConfigurable):
 
     def validate_notebook_model(self, model):
         """Add failed-validation message to model"""
+        self.log.info('starting validation in manager.py validate_notebook_model().')
         try:
             validate_nb(model['content'])
         except ValidationError as e:

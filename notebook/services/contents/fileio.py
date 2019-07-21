@@ -263,8 +263,9 @@ class FileManagerMixin(Configurable):
             raise HTTPError(404, "%s is outside root contents directory" % path)
         return os_path
 
-    def _read_notebook(self, os_path, as_version=4):
+    def _read_notebook(self, os_path, as_version=5):
         """Read a notebook from an os path."""
+        self.log.info('Entering fileio.py _read_notebook with as_version='+str(as_version))
         with self.open(os_path, 'r', encoding='utf-8') as f:
             try:
                 return nbformat.read(f, as_version=as_version)
