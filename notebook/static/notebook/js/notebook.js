@@ -183,7 +183,7 @@ define([
         // autosave *at most* every two minutes
         this.minimum_autosave_interval = 120000;
         this.notebook_name_blacklist_re = /[\/\\:]/;
-        this.nbformat = 4; // Increment this when changing the nbformat
+        this.nbformat = 5; // Increment this when changing the nbformat
         this.nbformat_minor = this.current_nbformat_minor = 1; // Increment this when changing the nbformat
         this.codemirror_mode = 'text';
         this.create_elements();

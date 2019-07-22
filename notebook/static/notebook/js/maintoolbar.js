@@ -119,7 +119,7 @@ define([
                 sel.val('markdown');
                 break;
             case 'WYSIWYG':
-            	that.notebook.celss_to_WYSIWYG();
+            	that.notebook.cells_to_WYSIWYG();
             case 'multiselect':
                 break;
             default:
