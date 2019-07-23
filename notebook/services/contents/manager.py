@@ -15,7 +15,8 @@ from ...files.handlers import FilesHandler
 from .checkpoints import Checkpoints
 from traitlets.config.configurable import LoggingConfigurable
 from nbformat import sign, validate as validate_nb, ValidationError
-from nbformat.v4 import new_notebook
+#from nbformat.v4 import new_notebook
+from nbformat.v5 import new_notebook
 from ipython_genutils.importstring import import_item
 from traitlets import (
     Any,
@@ -331,7 +332,10 @@ class ContentsManager(LoggingConfigurable):
         """
         # Extract the full suffix from the filename (e.g. .tar.gz)
         path = path.strip('/')
-        basename, dot, ext = filename.partition('.')
+        basename, dot, ext = filename.rpartition('.')
+        if ext != 'ipynb':
+                basename, dot, ext = filename.partition('.')
+                
         suffix = dot + ext
 
         for i in itertools.count():
@@ -347,6 +351,7 @@ class ContentsManager(LoggingConfigurable):
 
     def validate_notebook_model(self, model):
         """Add failed-validation message to model"""
+        self.log.info('starting validation in manager.py validate_notebook_model().')
         try:
             validate_nb(model['content'])
         except ValidationError as e:
@@ -425,6 +430,8 @@ class ContentsManager(LoggingConfigurable):
 
         If to_path not specified, it will be the parent directory of from_path.
         If to_path is a directory, filename will increment `from_path-Copy#.ext`.
+        Considering multi-part extensions, the Copy# part will be placed before the first dot for all the extensions except `ipynb`.
+        For easier manual searching in case of notebooks, the Copy# part will be placed before the last dot. 
 
         from_path must be a full path to a file.
         """
