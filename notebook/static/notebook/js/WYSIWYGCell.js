@@ -132,11 +132,33 @@ define([
         inner_cell.append(input_area);
         input_area.innerHTML=' \n'; //make sure the div has some content for quill
                                    // to start with.
+        //Set up the menu options for the editor
+        var toolbarOptions = [
+        	['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+        	[{ 'script': 'sub'}, { 'script': 'super' }],      // superscript/subscript
+        	[{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
+        	[{ 'font': [] }],
+        	[{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
+        	
+        	//  [{ 'header': 1 }, { 'header': 2 }],               // custom button values
+        	[{ 'list': 'ordered'}, { 'list': 'bullet' }],
+        	[{ 'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
+        	['link'],											// insert link
+        	['image'],										//insert image
+        	['blockquote', 'code-block'],
+        	
+        	[{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+        	
+        	[{ 'align': [] }],
+        	[{ 'direction': 'rtl' }],                         // text direction
+        	
+        	['clean']                                         // remove formatting button
+        ];
         this.editor = new Quill(input_area, {
-/*                 modules:{
+                 modules:{
                     toolbar: toolbarOptions
                 },
- */                theme: 'snow'
+                theme: 'snow'
             });
  
         this.editor.on('editor-change', function (eventName, args){
@@ -216,8 +238,19 @@ define([
     WYSIWYGCell.prototype.execute = function () {
         this.render();
     };
-
+    
     /**
+     * @method render
+     */
+    WYSIWYGCell.prototype.render = function () {
+    	var cont = Cell.prototype.render.apply(this);
+    	if (cont) {
+    		var that = this;
+    		var html = this.editor.root.innerHTML;
+    	}
+    }
+
+    /**    
      * setter: {{#crossLink "WYSIWYGCell/set_text"}}{{/crossLink}}
      * @method get_text
      * @retrun {string} CodeMirror current text value
