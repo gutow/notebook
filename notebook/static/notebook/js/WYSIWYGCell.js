@@ -62,11 +62,11 @@ define([
                     config: options.config, 
                     keyboard_manager: options.keyboard_manager, 
                     events: this.events}]);
-
+        
+        this.placeholder = 'To Edit this cell double click in it.';
         this.cell_type = this.cell_type || 'WYSIWYG';
         mathjaxutils = mathjaxutils;
         this.rendered = false;
-       
     };
 
     WYSIWYGCell.prototype = Object.create(Cell.prototype);
@@ -118,7 +118,7 @@ define([
 
         var prompt = $('<div/>').addClass('prompt input_prompt');
         cell.append(prompt);
-        var inner_cell = $('<div/>').addClass('inner_cell');
+        var inner_cell = $('<div/>').addClass('inner_cell ql-snow');
         this.celltoolbar = new celltoolbar.CellToolbar({
             cell: this, 
             notebook: this.notebook});
@@ -132,11 +132,33 @@ define([
         inner_cell.append(input_area);
         input_area.innerHTML=' \n'; //make sure the div has some content for quill
                                    // to start with.
+        //Set up the menu options for the editor
+        var toolbarOptions = [
+        	['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+        	[{ 'script': 'sub'}, { 'script': 'super' }],      // superscript/subscript
+        	[{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
+        	[{ 'font': [] }],
+        	[{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
+        	
+        	//  [{ 'header': 1 }, { 'header': 2 }],               // custom button values
+        	[{ 'list': 'ordered'}, { 'list': 'bullet' }],
+        	[{ 'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
+        	['link'],											// insert link
+        	['image'],										//insert image
+        	['blockquote', 'code-block'],
+        	
+        	[{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+        	
+        	[{ 'align': [] }],
+        	[{ 'direction': 'rtl' }],                         // text direction
+        	
+        	['clean']                                         // remove formatting button
+        ];
         this.editor = new Quill(input_area, {
-/*                 modules:{
+                 modules:{
                     toolbar: toolbarOptions
                 },
- */                theme: 'snow'
+                theme: 'snow'
             });
  
         this.editor.on('editor-change', function (eventName, args){
@@ -182,8 +204,8 @@ define([
         // ensure KM is enabled when quill is focused:
         //this.editor.on('keydown', $.proxy(this.handle_keyevent,this))  keydown is not an event emitted by quill...
         // The tabindex=-1 makes this div focusable.
-        var render_area = $('<div/>').addClass('text_cell_render rendered_html')
-            .attr('tabindex','-1');
+        var render_area = $('<div/>').addClass('text_cell_render rendered_html ql-editor')
+            .attr('tabindex','-1').attr('contenteditable','false');
         inner_cell.append(input_area).append(render_area);
         cell.append(inner_cell);
         this.element = cell;
@@ -216,8 +238,26 @@ define([
     WYSIWYGCell.prototype.execute = function () {
         this.render();
     };
-
+    
     /**
+     * @method render
+     */
+    WYSIWYGCell.prototype.render = function () {
+    	var cont = Cell.prototype.render.apply(this);
+    	if (cont) {
+    		var that = this;
+    		var html = this.editor.root.innerHTML;
+    		//TODO handle empty cell by putting in instructions to double click to edit.
+    		//TODO needed? var text_and_math=mathjaxutils.remove_math(html); 
+    		html=$(security.sanitize_html_and_parse(html));
+    		that.unrender();
+            that.set_rendered(html);
+            that.typeset();
+    	}
+        return cont;
+    };
+
+    /**    
      * setter: {{#crossLink "WYSIWYGCell/set_text"}}{{/crossLink}}
      * @method get_text
      * @retrun {string} CodeMirror current text value
@@ -268,7 +308,8 @@ define([
             // it in their override select())
             this.notebook.set_insert_image_enabled(false);
             if(this.mode != 'edit') {
-            that.events.trigger('edit_mode.Cell', {cell: that});
+            	this.mode='edit'
+            	that.events.trigger('edit_mode.Cell', {cell: that});
             }
             return true;
         } else {
@@ -386,11 +427,12 @@ function to_WYSIWYG_cell() {
 	var target_cell = Jupyter.notebook.insert_cell_below('WYSIWYG', source_index);
 	var text = source_cell.get_text();
 	if (text == source_cell.placeholder) {
-		text == ' ';	
+		text = target_cell.placeholder;	
 	}
 	target_cell.metadata = source_cell.metadata;
 	target_cell.attachments = source_cell.attachments
 	target_cell.editor.setText(text);
 	source_cell.element.remove();
+	target_cell.unrender();
 }
 
