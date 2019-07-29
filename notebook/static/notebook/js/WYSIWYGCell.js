@@ -62,11 +62,11 @@ define([
                     config: options.config, 
                     keyboard_manager: options.keyboard_manager, 
                     events: this.events}]);
-
+        
+        this.placeholder = 'To Edit this cell double click in it.';
         this.cell_type = this.cell_type || 'WYSIWYG';
         mathjaxutils = mathjaxutils;
         this.rendered = false;
-       
     };
 
     WYSIWYGCell.prototype = Object.create(Cell.prototype);
@@ -118,7 +118,7 @@ define([
 
         var prompt = $('<div/>').addClass('prompt input_prompt');
         cell.append(prompt);
-        var inner_cell = $('<div/>').addClass('inner_cell');
+        var inner_cell = $('<div/>').addClass('inner_cell ql-snow');
         this.celltoolbar = new celltoolbar.CellToolbar({
             cell: this, 
             notebook: this.notebook});
@@ -204,8 +204,8 @@ define([
         // ensure KM is enabled when quill is focused:
         //this.editor.on('keydown', $.proxy(this.handle_keyevent,this))  keydown is not an event emitted by quill...
         // The tabindex=-1 makes this div focusable.
-        var render_area = $('<div/>').addClass('text_cell_render rendered_html')
-            .attr('tabindex','-1');
+        var render_area = $('<div/>').addClass('text_cell_render rendered_html ql-editor')
+            .attr('tabindex','-1').attr('contenteditable','false');
         inner_cell.append(input_area).append(render_area);
         cell.append(inner_cell);
         this.element = cell;
@@ -247,8 +247,14 @@ define([
     	if (cont) {
     		var that = this;
     		var html = this.editor.root.innerHTML;
+    		//TODO handle empty cell by putting in instructions to double click to edit.
+    		//TODO needed? var text_and_math=mathjaxutils.remove_math(html); 
+    		html=$(security.sanitize_html_and_parse(html));
+            that.set_rendered(html);
+            that.typeset();
     	}
-    }
+        return cont;
+    };
 
     /**    
      * setter: {{#crossLink "WYSIWYGCell/set_text"}}{{/crossLink}}
@@ -419,11 +425,12 @@ function to_WYSIWYG_cell() {
 	var target_cell = Jupyter.notebook.insert_cell_below('WYSIWYG', source_index);
 	var text = source_cell.get_text();
 	if (text == source_cell.placeholder) {
-		text == ' ';	
+		text = target_cell.placeholder;	
 	}
 	target_cell.metadata = source_cell.metadata;
 	target_cell.attachments = source_cell.attachments
 	target_cell.editor.setText(text);
 	source_cell.element.remove();
+	target_cell.unrender();
 }
 
