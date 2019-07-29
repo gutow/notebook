@@ -307,7 +307,8 @@ define([
             // it in their override select())
             this.notebook.set_insert_image_enabled(false);
             if(this.mode != 'edit') {
-            that.events.trigger('edit_mode.Cell', {cell: that});
+            	this.mode='edit'
+            	that.events.trigger('edit_mode.Cell', {cell: that});
             }
             return true;
         } else {
