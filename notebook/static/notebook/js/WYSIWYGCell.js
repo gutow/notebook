@@ -252,7 +252,9 @@ define([
     		html=$(security.sanitize_html_and_parse(html));
     		that.unrender();
             that.set_rendered(html);
-            that.typeset();
+            //only apply math typesetting to the rendered text.
+            var torender = that.element.find('div.text_cell_render');
+            utils.typeset(torender);
     	}
         return cont;
     };
