@@ -250,6 +250,7 @@ define([
     		//TODO handle empty cell by putting in instructions to double click to edit.
     		//TODO needed? var text_and_math=mathjaxutils.remove_math(html); 
     		html=$(security.sanitize_html_and_parse(html));
+    		that.unrender();
             that.set_rendered(html);
             that.typeset();
     	}
