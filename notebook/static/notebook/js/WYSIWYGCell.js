@@ -102,6 +102,12 @@ define([
                 that.events.trigger('command_mode.Cell', {cell: that});
             };
         };
+        this.element.dblclick(function () {
+            var cont = that.unrender();
+            if (cont) {
+                that.select();
+            }
+        });
     };
     
     /**
@@ -129,6 +135,7 @@ define([
         var input_area = document.createElement('div');
         input_area.classList.add('input_area');
         input_area.classList.add('WYSIWYG');
+        input_area.classList.add('tex2jax_ignore');
         inner_cell.append(input_area);
         input_area.innerHTML=' \n'; //make sure the div has some content for quill
                                    // to start with.
@@ -227,10 +234,13 @@ define([
     WYSIWYGCell.prototype.unrender = function () {
         var cont = Cell.prototype.unrender.apply(this);
         if (cont) {
-            var text_cell = this.element;
             if (this.get_text() === this.placeholder) {
                 this.set_text('');
             }
+            this.element.addClass('unrendered');
+            this.element.removeClass('rendered');
+            this.rendered = false;
+            
         }
         return cont;
     };
@@ -255,10 +265,13 @@ define([
             //only apply math typesetting to the rendered text.
             var torender = that.element.find('div.text_cell_render');
             utils.typeset(torender);
+            that.element.addClass('rendered');
+            that.element.removeClass('unrendered');
+            that.rendered = true;
     	}
         return cont;
     };
-
+    
     /**    
      * setter: {{#crossLink "WYSIWYGCell/set_text"}}{{/crossLink}}
      * @method get_text
