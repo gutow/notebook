@@ -19,5 +19,7 @@
     "po2json": "^0.4.5",
     "requirejs": "^2.3.6"
   },
-  "dependencies": {}
+  "dependencies": {
+    "quill": "^1.3.6"
+  }
 }
