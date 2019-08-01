@@ -6,7 +6,7 @@
     "bootstrap": "bootstrap#~3.4",
     "bootstrap-tour": "0.9.0",
     "codemirror": "components/codemirror#~5.37",
-    "quill":"^1.36",
+    "quill":"^1.3.6",
     "create-react-class": "https://cdn.jsdelivr.net/npm/create-react-class@15.6.3/create-react-class.min.js",
     "es6-promise": "~1.0",
     "font-awesome": "components/font-awesome#~4.7.0",
