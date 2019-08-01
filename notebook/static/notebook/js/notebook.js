@@ -1322,6 +1322,8 @@ define([
             case 'WYSIWYG':
                 cell = new WYSIWYGCell.WYSIWYGCell(cell_options);
                 break;
+                //this is added so that the celltype is acknowledged 
+                //as extant by the notebook
             default:
                 console.log("Unrecognized cell type: ", type, cellmod);
                 cell = new cellmod.UnrecognizedCell(cell_options);

@@ -95,11 +95,13 @@ define([
             this.onfocus = function () {
             	that.events.trigger('select.Cell', {'cell':that});
                 that.events.trigger('edit_mode.Cell', {cell: that});
+                //this replaces codemirrors focus event
             }
             };
         if (this.editor) {
             this.onblur = function() {
                 that.events.trigger('command_mode.Cell', {cell: that});
+               //this replaces codemirrors blur event
             };
         };
         this.element.dblclick(function () {
@@ -107,6 +109,7 @@ define([
             if (cont) {
                 that.select();
             }
+            //this overrides cells doubleclick event in order to allow for the reselecting of a rendered cell
         });
     };
     
@@ -184,32 +187,28 @@ define([
                 //otherwise already selected or blurred so do nothing.
         });
          //codemirror monkeypatch overrides on calls from notebook
-        //
-        //
-        //
+
     		this.code_mirror = function() {
     			null;	
+    			//overiding codemirror so it doesn't call the wrong thing
     		}
     		this.code_mirror.getInputField = function() {
     			return input_area;
+    			//replacing the codemirror call
     		};
     		this.code_mirror.getInputField.blur = function() {
     			that.handle_command_mode(data.cell);
+    			//replacing the codemirror call that set a cell to command mode
     		};
     		this.code_mirror.refresh = function() {
-    		null;	
+    			null;	
+    			//replacing a codemirror call intended to check if the cell had been resized, not an issue with Quill
     		}
      		this.code_mirror.on = function(cm, change) {
-
+     			//overiding codemirror.on to prevent it from running
     			} 
-    	//end monkeypatch overrides, if this is too long then its proof 
-    	//that you need less interlinking
-    	//
-    	// 
-    	
-        // In case of bugs that put the keyboard manager into an inconsistent state,
-        // ensure KM is enabled when quill is focused:
-        //this.editor.on('keydown', $.proxy(this.handle_keyevent,this))  keydown is not an event emitted by quill...
+    	//end monkeypatch overrides
+
         // The tabindex=-1 makes this div focusable.
         var render_area = $('<div/>').addClass('text_cell_render rendered_html ql-editor')
             .attr('tabindex','-1').attr('contenteditable','false');
@@ -240,7 +239,7 @@ define([
             this.element.addClass('unrendered');
             this.element.removeClass('rendered');
             this.rendered = false;
-            
+            //unhides the editor for a cell
         }
         return cont;
     };
@@ -270,6 +269,7 @@ define([
             that.rendered = true;
     	}
         return cont;
+        //hides the editor and formats the cells contents
     };
     
     /**    
@@ -431,7 +431,7 @@ function toWYSIWYG() {
 		}
 	document.getElementById('maintoolbar-container').appendChild(newselect);
 	}
-
+//create the toWYSIWYG button, may eventually replace it with a menu option
 }
 
 toWYSIWYG();
@@ -449,5 +449,6 @@ function to_WYSIWYG_cell() {
 	target_cell.editor.setText(text);
 	source_cell.element.remove();
 	target_cell.unrender();
+	//turns the selected cell into a WYSIWYG cell
 }
 
