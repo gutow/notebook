@@ -265,7 +265,7 @@ class FileManagerMixin(Configurable):
 
     def _read_notebook(self, os_path, as_version=5):
         """Read a notebook from an os path."""
-        self.log.info('Entering fileio.py _read_notebook with as_version='+str(as_version))
+        self.log.debug('Entering fileio.py _read_notebook with as_version='+str(as_version))
         with self.open(os_path, 'r', encoding='utf-8') as f:
             try:
                 return nbformat.read(f, as_version=as_version)

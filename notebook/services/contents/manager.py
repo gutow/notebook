@@ -351,7 +351,7 @@ class ContentsManager(LoggingConfigurable):
 
     def validate_notebook_model(self, model):
         """Add failed-validation message to model"""
-        self.log.info('starting validation in manager.py validate_notebook_model().')
+        self.log.debug('starting validation in manager.py validate_notebook_model().')
         try:
             validate_nb(model['content'])
         except ValidationError as e:
