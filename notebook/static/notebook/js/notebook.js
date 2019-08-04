@@ -1536,7 +1536,7 @@ define([
         }
 
         for(var i=0; i < indices.length; i++) {
-            this.to_WYSIWYG(indicies[i]);
+            this.to_WYSIWYG(indices[i]);
         }
      };     
      
@@ -1550,7 +1550,7 @@ define([
         if (this.is_valid_cell_index(i)) {
             var source_cell = this.get_cell(i);
 
-            if (!(source_cell instanceof WYSIWYGCell) && source_cell.is_editable()) {
+            if ((source_cell.cell_type!='WYSIWYG') && source_cell.is_editable()) {
                 var target_cell = this.insert_cell_below('WYSIWYG',i);
                 var text = source_cell.get_text();
 
