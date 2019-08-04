@@ -386,6 +386,15 @@ define([
                 env.notebook.cells_to_raw();
             }
         },
+        //TODO add 'change-cell-to-WYSIWYG'
+        'change-cell-to-WYSIWYG' : {
+            cmd: i18n.msg._('change cell to WYSIWYG'),
+            help    : i18n.msg._('change cell to WYSIWYG'),
+            help_index : '', //TODO generate helpand index
+            handler : function (env) {
+                env.notebook.cells_to_WYSIWYG();
+            }
+        }
         'change-cell-to-heading-1' : {
             cmd: i18n.msg._('change cell to heading 1'),
             help    : i18n.msg._('change cell to heading 1'),

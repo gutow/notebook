@@ -240,6 +240,7 @@ define([
             '#run_all_cells_below': 'run-all-cells-below',
             '#to_code': 'change-cell-to-code',
             '#to_markdown': 'change-cell-to-markdown',
+            '#to_WYSIWYG': 'change-cell-to-WYSIWYG',
             '#to_raw': 'change-cell-to-raw',
             '#toggle_current_output': 'toggle-cell-output-collapsed',
             '#toggle_current_output_scroll': 'toggle-cell-output-scrolled',

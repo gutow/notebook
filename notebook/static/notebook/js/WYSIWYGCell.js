@@ -437,6 +437,7 @@ function toWYSIWYG() {
 toWYSIWYG();
 
 function to_WYSIWYG_cell() {
+    //turns the selected cell into a WYSIWYG cell
 	var source_cell = Jupyter.notebook.get_selected_cell();
 	var source_index = Jupyter.notebook.get_selected_index();
 	var target_cell = Jupyter.notebook.insert_cell_below('WYSIWYG', source_index);
@@ -444,11 +445,20 @@ function to_WYSIWYG_cell() {
 	if (text == source_cell.placeholder) {
 		text = target_cell.placeholder;	
 	}
+	//TODO be smart about getting data form other cell types:
+	//    from markdown want the rendered HTML so format not lost
+	//    from code cells:
+	//        1)if begins with %%html magic transfer the rest of the contents as
+	//            html.
+	//        2)if not html transfer as normal.
+	//    from rawNBconvert
+	//        1) try to determine if it is html code, if so transfer as html.
+	//        2) otherwise tranfer text.
+	//Should also make sure not to convert a cell that is already WYSIWYG.
 	target_cell.metadata = source_cell.metadata;
 	target_cell.attachments = source_cell.attachments
 	target_cell.editor.setText(text);
 	source_cell.element.remove();
 	target_cell.unrender();
-	//turns the selected cell into a WYSIWYG cell
 }
 

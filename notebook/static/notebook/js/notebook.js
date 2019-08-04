@@ -1524,7 +1524,61 @@ define([
             }
         }
     };
+    
+    /**
+     * Turn one or more cells into a WYSIWYG cell(s).
+     * 
+     * @param {integer} [index] - cell index
+     */
+     Notebook.prototype.cells_to_WYSIWYG = function (indices) {
+        if (indices === undefined) {
+            indices = this.get_selected_cells_indices();
+        }
 
+        for(var i=0; i < indices.length; i++) {
+            this.to_WYSIWYG(indicies[i]);
+        }
+     };     
+     
+    /**
+     * Turn a cell into a WYSIWYG cell.
+     * 
+     * @param {integer} [index] - cell index
+     */
+    Notebook.prototype.to_WYSIWYG = function (index) {
+        var i = this.index_or_selected(index);
+        if (this.is_valid_cell_index(i)) {
+            var source_cell = this.get_cell(i);
+
+            if (!(source_cell instanceof WYSIWYGCell) && source_cell.is_editable()) {
+                var target_cell = this.insert_cell_below('WYSIWYG',i);
+                var text = source_cell.get_text();
+
+                if (text === source_cell.placeholder) {
+                    text = target_cell.placeholder;
+                }
+                // metadata
+                target_cell.metadata = source_cell.metadata;
+                target_cell.attachments = source_cell.attachments;
+
+                // We must show the editor before setting its contents
+                target_cell.unrender();
+                	//TODO be smart about getting data form other cell types:
+                	//    from markdown want the rendered HTML so format not lost
+                	//    from code cells:
+                	//        1)if begins with %%html magic transfer the rest of the contents as
+                	//            html.
+                	//        2)if not html transfer as normal.
+                	//    from rawNBconvert
+                	//        1) try to determine if it is html code, if so transfer as html.
+                	//        2) otherwise tranfer text.
+                target_cell.set_text(text);
+                source_cell.element.remove();
+                this.select(i);
+            }
+        }
+    };
+    
     /**
      * Turn one or more cells into a raw text cell.
      *
@@ -1539,16 +1593,6 @@ define([
             this.to_raw(indices[i]);
         }
      };
-
-     Notebook.prototype.cells_to_WYSIWYG = function (indices) {
-        if (indices === undefined) {
-            indices = this.get_selected_cells_indices();
-        }
-
-        for(var i=0; i < indices.length; i++) {
-            i.to_WYSIWYG_cell();
-        }
-     };     
      
     /**
      * Turn a cell into a raw text cell.
