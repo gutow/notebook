@@ -394,7 +394,7 @@ define([
             handler : function (env) {
                 env.notebook.cells_to_WYSIWYG();
             }
-        }
+        },
         'change-cell-to-heading-1' : {
             cmd: i18n.msg._('change cell to heading 1'),
             help    : i18n.msg._('change cell to heading 1'),
