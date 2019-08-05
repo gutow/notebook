@@ -1509,7 +1509,14 @@ define([
 
                 // We must show the editor before setting its contents
                 target_cell.unrender();
-                target_cell.set_text(text);
+                //Switch to copying html code if the source cell is WYSIWYG.
+                if (source_cell.cell_type != 'WYSIWYG'){
+                    target_cell.set_text(text);
+                }
+                else {
+                    text=source_cell.editor.root.innerHTML;
+                    target_cell.set_text(text);
+                }
                 // make this value the starting point, so that we can only undo
                 // to this state, instead of a blank cell
                 target_cell.code_mirror.clearHistory();
@@ -1569,7 +1576,7 @@ define([
                     target_cell.set_text(text); //paste extracted text as default.
                     //Cell contains something we might want to translate to html.
                     if (source_cell.cell_type == 'markdown'){
-                        //render is to generate the latest html
+                        //render it to generate the latest html
                         source_cell.render();
                         //copy the html to the WYSIWYG cell by pasting
                         var rendereddiv = source_cell.element.find('div.text_cell_render');
