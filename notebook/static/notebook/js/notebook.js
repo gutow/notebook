@@ -1565,14 +1565,28 @@ define([
                 target_cell.unrender();
                 	//TODO be smart about getting data form other cell types:
                 	//    from markdown want the rendered HTML so format not lost
-                	//    from code cells:
+                if (text != target_cell.placeholder){
+                    //Cell contains something we might want to translate to hml.
+                    if (source_cell.cell_type = 'markdown'){
+                        //render is to generate the latest html
+                        source_cell.render();
+                        //copy the html to the WYSIWYG cell by pasting
+                        var rendereddiv = source_cell.element.find('div.text_cell_render');
+                        //find actually returns an array. We want the first element.
+                        text = rendereddiv[0].innerHTML;
+                        target_cell.editor.clipboard.dangerouslyPasteHTML(text);
+                    }
+                	//    from codecell
                 	//        1)if begins with %%html magic transfer the rest of the contents as
                 	//            html.
                 	//        2)if not html transfer as normal.
                 	//    from rawNBconvert
                 	//        1) try to determine if it is html code, if so transfer as html.
-                	//        2) otherwise tranfer text.
-                target_cell.set_text(text);
+                	//        2) otherwise transfer text.
+                }
+                else {
+                    target_cell.set_text(text);
+                }
                 source_cell.element.remove();
                 this.select(i);
             }
