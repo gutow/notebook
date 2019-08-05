@@ -1566,6 +1566,7 @@ define([
                 	//Be smart about getting data form other cell types:
                 	//    from markdown want the rendered HTML so format not lost
                 if (text != target_cell.placeholder){
+                    target_cell.set_text(text); //paste extracted text as default.
                     //Cell contains something we might want to translate to html.
                     if (source_cell.cell_type == 'markdown'){
                         //render is to generate the latest html
@@ -1594,9 +1595,6 @@ define([
                 	//    TODO from rawNBconvert (not clear how to do this well)
                 	//        1) try to determine if it is html code, if so transfer as html.
                 	//        2) otherwise transfer text.
-                }
-                else {
-                    target_cell.set_text(text);
                 }
                 source_cell.element.remove();
                 this.select(i);
