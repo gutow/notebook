@@ -1563,11 +1563,11 @@ define([
 
                 // We must show the editor before setting its contents
                 target_cell.unrender();
-                	//TODO be smart about getting data form other cell types:
+                	//Be smart about getting data form other cell types:
                 	//    from markdown want the rendered HTML so format not lost
                 if (text != target_cell.placeholder){
-                    //Cell contains something we might want to translate to hml.
-                    if (source_cell.cell_type = 'markdown'){
+                    //Cell contains something we might want to translate to html.
+                    if (source_cell.cell_type == 'markdown'){
                         //render is to generate the latest html
                         source_cell.render();
                         //copy the html to the WYSIWYG cell by pasting
@@ -1580,7 +1580,18 @@ define([
                 	//        1)if begins with %%html magic transfer the rest of the contents as
                 	//            html.
                 	//        2)if not html transfer as normal.
-                	//    from rawNBconvert
+                	if (source_cell.cell_type == 'code'){
+                	    var firstline = text.split('\n')[0].trim();
+                	    if (firstline.startsWith('%%html')){
+                	        text = text.replace(/%%html/,'');
+                	        //since not taking rendered html this may be unsafe
+                	        //TODO: should sanitize, but having trouble accessing
+                	        //security from this context.
+                	        //text = target_cell.$(security.sanitize_html_and_parse(text));              	        
+                	        target_cell.editor.clipboard.dangerouslyPasteHTML(text);
+                	    }
+                	}
+                	//    TODO from rawNBconvert (not clear how to do this well)
                 	//        1) try to determine if it is html code, if so transfer as html.
                 	//        2) otherwise transfer text.
                 }
