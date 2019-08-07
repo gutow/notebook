@@ -1576,12 +1576,16 @@ define([
                     target_cell.set_text(text); //paste extracted text as default.
                     //Cell contains something we might want to translate to html.
                     if (source_cell.cell_type == 'markdown'){
-                        //render it to generate the latest html
-                        source_cell.render();
-                        //copy the html to the WYSIWYG cell by pasting
+                        // Render it to generate the latest html but with no math typesetting.
+                        var text_and_math = mathjaxutils.remove_math(text);
+                        text = text_and_math[0];
+                        var math = text_and_math[1];
                         var rendereddiv = source_cell.element.find('div.text_cell_render');
+                        source_cell.set_text(text);
+                        source_cell.render();
                         //find actually returns an array. We want the first element.
-                        text = rendereddiv[0].innerHTML;
+                        text = mathjaxutils.replace_math(rendereddiv[0].innerHTML, math);
+                        //copy the html to the WYSIWYG cell by pasting
                         target_cell.editor.clipboard.dangerouslyPasteHTML(text);
                     }
                 	//    from codecell
@@ -1595,7 +1599,9 @@ define([
                 	        //since not taking rendered html this may be unsafe
                 	        //TODO: should sanitize, but having trouble accessing
                 	        //security from this context.
-                	        //text = target_cell.$(security.sanitize_html_and_parse(text));              	        
+                	        //text = target_cell.$(security.sanitize_html_and_parse(text));
+                	        //NOTE: the editor Quill strips out HTML that is not part of
+                	        // the formats allowed in Quill.
                 	        target_cell.editor.clipboard.dangerouslyPasteHTML(text);
                 	    }
                 	}
