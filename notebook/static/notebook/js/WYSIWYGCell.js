@@ -191,7 +191,7 @@ define([
     		this.code_mirror = function() {
     			null;	
     			//overiding codemirror so it doesn't call the wrong thing
-    		}
+    		};
     		this.code_mirror.getInputField = function() {
     			return input_area;
     			//replacing the codemirror call
@@ -202,11 +202,41 @@ define([
     		};
     		this.code_mirror.refresh = function() {
     			null;	
-    			//replacing a codemirror call intended to check if the cell had been resized, not an issue with Quill
-    		}
+    			//replacing a codemirror call intended to check if the cell 
+    			//had been resized, not an issue with Quill
+    		};
+    		this.code_mirror.getCursor = function(){
+    		    //overiding code_mirror.getCursor call
+    		    //odd this function appear to be called after the cell is
+    		    //destroyed. Make that.editor undefined!
+    		    // var index = that.editor.getSelection().index;
+    		    //TODO: Now it gets a bit messy. To duplicate the object CodeMirror
+    		    // returns we need to count line breaks before this index and
+    		    // calculate a relative index from the beginning of the line
+    		    // the cursor is in
+    		    // for now returning beginning
+    		    let pos = {line: 0, ch: 0};
+    		    return(pos);
+    		};
+    		this.code_mirror.setCursor = function(pos){
+    		    //overiding code_mirror.setCursor call
+    		    // TODO: as code_mirror sends a line and offset from beginning of 
+    		    // line this will have to be translated into an index from
+    		    // beginning of editor contents.
+    		    //presently doing nothing.
+    		};
+    		this.code_mirror.setOption = function(option, spec){
+    		    //overiding code_mirror.setOption call.
+    		    // Nothing adjustable on the fly for this editor.
+    		    // Do nothing.
+    		};
+    		this.code_mirror.clearHistory = function(){
+    		    //overiding code_mirror.clearHistory call
+    		    that.editor.history.clear();
+    		};
      		this.code_mirror.on = function(cm, change) {
      			//overiding codemirror.on to prevent it from running
-    			} 
+     		}; 
     	//end monkeypatch overrides
 
         // The tabindex=-1 makes this div focusable.
