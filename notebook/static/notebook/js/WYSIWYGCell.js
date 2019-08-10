@@ -450,7 +450,7 @@ define([
     };
     return WYSIWYGCell;
 });
-
+/* DON'T CREATE EXTRA BUTTON, WILL KEEP CODE UNTIL READY TO FOLD INTO ROOT PROJECT.
 function toWYSIWYG() {
 	if(!document.getElementById('toWYSIWYGbtn')) {
 		var newselect=document.createElement('button');
@@ -491,4 +491,4 @@ function to_WYSIWYG_cell() {
 	source_cell.element.remove();
 	target_cell.unrender();
 }
-
+*/
