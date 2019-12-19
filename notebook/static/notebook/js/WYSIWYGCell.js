@@ -374,7 +374,9 @@ define([
             }
 
             if (data.source !== undefined) {
-                this.editor.setContents(data.source);
+                this.editor.clipboard.dangerouslyPasteHTML(data.source);
+                //old behavior using Delta format
+                //this.editor.setContents(data.source);
                 // make this value the starting point, so that we can only undo
                 // to this state, instead of a blank cell
                 //this.tinymce.UndoManager.clear();
@@ -398,7 +400,9 @@ define([
         }
 
         var data = Cell.prototype.toJSON.apply(this);
-        data.source = this.editor.getContents();
+        data.source = this.editor.root.innerHTML;
+        //old behavior, delta stored in JSON
+        //data.source = this.editor.getContents();
         if (data.source == this.placeholder) {
             data.source = "";
         }
